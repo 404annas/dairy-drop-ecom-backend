@@ -8,6 +8,7 @@ import { initSocket } from "./socket/index.js";
 const app = createApp();
 const port = env.PORT;
 
+
 connectToDatabase()
   .then(() => {
     if (env.NODE_ENV === "production" && env.JWT_SECRET === "change-me") {
