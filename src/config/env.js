@@ -12,6 +12,7 @@ export const env = {
   MONGO_URI: getEnv("MONGO_URI", "mongodb://127.0.0.1:27017/dairy-drop"),
   JWT_SECRET: getEnv("JWT_SECRET", "change-me"),
   JWT_EXPIRES_IN: getEnv("JWT_EXPIRES_IN", "1d"),
+  SESSION_SECRET: getEnv("SESSION_SECRET", "dairy-drop-session"),
   ADMIN_EMAIL: getEnv("ADMIN_EMAIL"),
   CORS_ORIGIN: getEnv("CORS_ORIGIN", "*"),
   RATE_LIMIT_WINDOW_MS: Number(
@@ -26,7 +27,7 @@ export const env = {
   STRIPE_CURRENCY: getEnv("STRIPE_CURRENCY", "pkr"),
   CLIENT_URL_SUCCESS: getEnv(
     "CLIENT_URL_SUCCESS",
-    "http://localhost:5174/orders",
+    "http://localhost:5173/orders",
   ),
-  CLIENT_URL_CANCEL: getEnv("CLIENT_URL_CANCEL", "http://localhost:5174/cart"),
+  CLIENT_URL_CANCEL: getEnv("CLIENT_URL_CANCEL", "http://localhost:5173/cart"),
 };
