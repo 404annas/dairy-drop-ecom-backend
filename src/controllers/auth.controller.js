@@ -12,6 +12,7 @@ import { signToken } from "../utils/jwt.js";
 import mongoose from "mongoose";
 import { Product } from "../models/product.model.js";
 import { googleClient } from "../config/google.js";
+import { env } from "../config/env.js";
 
 // STEP 1 → Redirect user to Google login
 export const googleLogin = asyncHandler(async (req, res) => {
@@ -34,7 +35,7 @@ export const googleCallback = asyncHandler(async (req, res) => {
     // 🛡️ 1) VERIFY STATE (MOST IMPORTANT SECURITY STEP)
     if (!state || state !== req.session.oauthState) {
       return res.redirect(
-        `${process.env.CLIENT_URL}/login?error=oauth_state_failed`,
+        `${env.CLIENT_URL}/login?error=oauth_state_failed`,
       );
     }
 
@@ -45,7 +46,7 @@ export const googleCallback = asyncHandler(async (req, res) => {
     // 🟢 3) Get user info from ID token
     const ticket = await googleClient.verifyIdToken({
       idToken: tokens.id_token,
-      audience: process.env.GOOGLE_CLIENT_ID,
+      audience: env.GOOGLE_CLIENT_ID,
     });
 
     const payload = ticket.getPayload();
@@ -110,10 +111,10 @@ export const googleCallback = asyncHandler(async (req, res) => {
     delete req.session.oauthState;
 
     // 🟢 5) Redirect to frontend with token
-    res.redirect(`${process.env.CLIENT_URL}/oauth-success?token=${token}`);
+    res.redirect(`${env.CLIENT_URL}/oauth-success?token=${token}`);
   } catch (err) {
     console.error("Google OAuth Error:", err);
-    res.redirect(`${process.env.CLIENT_URL}/login?error=oauth_failed`);
+    res.redirect(`${env.CLIENT_URL}/login?error=oauth_failed`);
   }
 });
 

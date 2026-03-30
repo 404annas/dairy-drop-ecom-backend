@@ -19,8 +19,8 @@ async function seedAdmin() {
   }
 
   const email = env.ADMIN_EMAIL;
-  const phone = process.env.ADMIN_PHONE || `9${randomDigits(9)}`; // 10 digits
-  let password = process.env.ADMIN_PASSWORD;
+  const phone = env.ADMIN_PHONE || `9${randomDigits(9)}`; // 10 digits
+  let password = env.ADMIN_PASSWORD;
   let generated = false;
   if (!password) {
     password = `Adm!n-${Math.random().toString(36).slice(2, 8)}-${randomDigits(3)}`;
@@ -43,7 +43,7 @@ async function seedAdmin() {
   } else {
     if (existing.role !== 'admin') existing.role = 'admin';
     existing.phone = existing.phone || phone;
-    if (process.env.ADMIN_PASSWORD) existing.password = hash; // only reset if provided
+    if (env.ADMIN_PASSWORD) existing.password = hash; // only reset if provided
     await existing.save();
     console.log(`Ensured admin role for: ${existing.email}`);
   }
