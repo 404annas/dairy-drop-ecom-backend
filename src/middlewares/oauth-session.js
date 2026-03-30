@@ -6,8 +6,10 @@ export const sessionMiddleware = session({
   secret: env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
-  cookie: { 
+  cookie: {
     secure: env.NODE_ENV === 'production',
-    maxAge: 24 * 60 * 60 * 1000 
+    httpOnly: true,
+    sameSite: 'lax',
+    maxAge: 24 * 60 * 60 * 1000
   }, // 24 hours
 });

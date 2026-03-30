@@ -8,7 +8,7 @@ import {
 } from "../validators/auth.schema.js";
 import { User } from "../models/user.model.js";
 import bcrypt from "bcryptjs";
-import { signToken } from "../utils/jwt.js";
+import { signToken, verifyToken } from "../utils/jwt.js";
 import mongoose from "mongoose";
 import { Product } from "../models/product.model.js";
 import { googleClient } from "../config/google.js";
@@ -16,9 +16,7 @@ import { env } from "../config/env.js";
 
 // STEP 1 → Redirect user to Google login
 export const googleLogin = asyncHandler(async (req, res) => {
-  const state = Math.random().toString(36).substring(2);
-  req.session.oauthState = state;
-
+  const state = signToken({ id: Date.now().toString(), type: 'oauth' });
   const url = googleClient.generateAuthUrl({
     access_type: "online",
     scope: ["openid", "profile", "email"],
@@ -32,8 +30,16 @@ export const googleCallback = asyncHandler(async (req, res) => {
   try {
     const { code, state } = req.query;
 
-    // 🛡️ 1) VERIFY STATE (MOST IMPORTANT SECURITY STEP)
-    if (!state || state !== req.session.oauthState) {
+    // 🛡️ 1) VERIFY STATE
+    if (!state) {
+      return res.redirect(
+        `${env.CLIENT_URL}/login?error=oauth_state_failed`,
+      );
+    }
+
+    try {
+      verifyToken(state);
+    } catch (err) {
       return res.redirect(
         `${env.CLIENT_URL}/login?error=oauth_state_failed`,
       );
@@ -106,9 +112,6 @@ export const googleCallback = asyncHandler(async (req, res) => {
       id: String(user._id),
       role: user.role,
     });
-
-    // 🧹 clear state
-    delete req.session.oauthState;
 
     // 🟢 5) Redirect to frontend with token
     res.redirect(`${env.CLIENT_URL}/oauth-success?token=${token}`);

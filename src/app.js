@@ -11,7 +11,6 @@ import { errorHandler } from "./middlewares/error.middleware.js";
 import { env } from "./config/env.js";
 import webhookRouter from "./routes/webhook.route.js";
 import paymentRouter from "./routes/payment.route.js";
-import { sessionMiddleware } from "./middlewares/oauth-session.js";
 
 export function createApp() {
   const app = express();
@@ -38,7 +37,6 @@ export function createApp() {
     express.raw({ type: "application/json" }),
     webhookRouter,
   );
-  app.use(sessionMiddleware);
 
   app.use(express.json({ limit: "1mb" }));
   app.use(express.urlencoded({ extended: true }));
