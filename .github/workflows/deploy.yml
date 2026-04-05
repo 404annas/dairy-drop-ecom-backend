@@ -1,0 +1,45 @@
+# This is the name of the workflow as it appears in the GitHub Actions tab
+name: Deploy Backend to Linode
+
+# 1. TRIGGER: This workflow runs every time you push code to the 'main' branch
+on:
+  push:
+    branches: [ main ]
+
+# 2. JOBS: What the "GitHub Cloud" should do
+jobs:
+  deploy:
+    name: SSH into Linode and Restart Server
+    runs-on: ubuntu-latest
+    
+    steps:
+      # Step A: Get the code from your repository into the GitHub runner
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      # Step B: Connect to your Linode and run deployment commands
+      - name: Executing remote SSH commands
+        uses: appleboy/ssh-action@master
+        with:
+          # These values come from your GitHub Repo Settings > Secrets
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          
+          # The actual terminal commands to run on your Linode
+          script: |
+            # Navigate to the backend folder (adjust if your path is different)
+            cd ~/sites/dairy-drop/backend
+
+            # Pull the latest code you just pushed to GitHub
+            git pull origin main
+
+            # Install all dependencies (Standard npm install including devDependencies)
+            npm install
+
+            # Restart the existing PM2 process named 'server'
+            # We use 'restart' so the app picks up the new code changes
+            pm2 restart server
+
+            # (Optional) Verify the status to make sure it's online
+            pm2 status
