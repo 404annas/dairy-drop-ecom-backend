@@ -28,18 +28,21 @@ jobs:
           
           # The actual terminal commands to run on your Linode
           script: |
-            # Navigate to the backend folder (adjust if your path is different)
+            # 1. Manually load NVM environment (Crucial for NVM users)
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            
+            # 2. Navigate to your project folder
             cd ~/sites/dairy-drop/backend
-
-            # Pull the latest code you just pushed to GitHub
+            
+            # 3. Pull latest code
             git pull origin main
-
-            # Install all dependencies (Standard npm install including devDependencies)
+            
+            # 4. Install dependencies (NVM is now loaded, so 'npm' will work)
             npm install
-
-            # Restart the existing PM2 process named 'server'
-            # We use 'restart' so the app picks up the new code changes
+            
+            # 5. Restart PM2 (PM2 is also part of Node/NVM, so it will work now)
             pm2 restart server
-
-            # (Optional) Verify the status to make sure it's online
+            
+            # 6. Verify
             pm2 status
